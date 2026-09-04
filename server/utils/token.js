@@ -9,10 +9,12 @@ const generateToken = (userId) => {
 const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
   const token = generateToken(user._id);
 
+  const isSecure = process.env.COOKIE_SECURE === 'true';
   const cookieOptions = {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE === 'true',
-    sameSite: 'lax',
+    secure: isSecure,
+    // Cross-origin (Vercel ↔ Render) needs SameSite=None + Secure
+    sameSite: isSecure ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   };
 
